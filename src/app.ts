@@ -10,7 +10,8 @@ db.sync().then(()=>{
     console.log("db connected successfully");
 }).catch(err=> console.log(err)
 )
-
+//{force:true} to erase database
+//killall node
 const app = express();
 app.use(express.json());
 app.use(logger('dev'));

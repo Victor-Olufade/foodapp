@@ -13,6 +13,8 @@ const index_2 = require("./config/index");
 index_2.db.sync().then(() => {
     console.log("db connected successfully");
 }).catch(err => console.log(err));
+//{force:true} to erase database
+//killall node
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, morgan_1.default)('dev'));
