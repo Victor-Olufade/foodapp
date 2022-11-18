@@ -78,7 +78,7 @@ UserInstance.init({
         }
     },
     otp: {
-        type: DataTypes.STRING,
+        type: DataTypes.NUMBER,
         allowNull: false,
         validate: {
             notNull: {

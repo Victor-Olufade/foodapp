@@ -34,3 +34,16 @@ export const generateHashedPassword = async(password: string, salt: string)=>{
 export const generateSignature=async(payload: AuthPayload)=>{
     return jwt.sign(payload, appSecret, {expiresIn: '1d'})
 }
+
+export const verifyJwtoken=async(signature: string)=>{
+    return jwt.verify(signature, appSecret)
+}
+
+export const loginSchema = Joi.object().keys({
+    email: Joi.string().required(),
+    password: Joi.string().required().regex(/[A-Za-z0-9]{3,30}/),
+})
+
+export const validatePassword=async(received: string, saved: string, salt: string)=>{
+    return await bcrypt.hash(received, salt) === saved;
+}

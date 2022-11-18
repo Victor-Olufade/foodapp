@@ -66,7 +66,7 @@ UserInstance.init({
         }
     },
     otp: {
-        type: sequelize_1.DataTypes.STRING,
+        type: sequelize_1.DataTypes.NUMBER,
         allowNull: false,
         validate: {
             notNull: {
