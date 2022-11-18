@@ -156,7 +156,27 @@ export const login=async(req: Request, res:Response)=>{
 export const requestOTP=async(req: Request, res: Response)=>{
     try {
         const token = req.params.signature;
-        const decode = await verifyJwtoken(token) as JwtPayload
+        const decode = await verifyJwtoken(token) as JwtPayload;
+        const User = await UserInstance.findOne({where:{email:decode.email}}) as unknown as UserAttribute;
+        if(User){
+            const {otp, expiryTime} = generateOtp();
+            const updateUser = await UserInstance.update({
+                otp, otp_expiry: expiryTime
+            }, {where: {email: decode.email}}) as unknown as UserAttribute
+
+            if(updateUser){
+                const User = await UserInstance.findOne({where:{email:decode.email}}) as unknown as UserAttribute;
+                await onOtpReq(otp, User.phone);
+                const html = eHtml(otp);
+                await sendEmail(adminMail, User.email, userSubject, html)
+                return res.status(200).json({
+                    message: 'OTP resent successfully'
+                })
+            }
+        }
+        return res.status(400).json({
+            Error: "Error resending OTP"
+        })
        
     } catch (error) {
         res.status(500).json({
