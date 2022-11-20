@@ -9,6 +9,8 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const users_1 = __importDefault(require("./routes/users"));
 const index_1 = __importDefault(require("./routes/index"));
 const index_2 = require("./config/index");
+const admin_1 = __importDefault(require("./routes/admin"));
+const vendor_1 = __importDefault(require("./routes/vendor"));
 // sequelize connection
 index_2.db.sync().then(() => {
     console.log("db connected successfully");
@@ -26,6 +28,8 @@ app.use((0, cookie_parser_1.default)());
 // })
 app.use('/user', users_1.default);
 app.use('/', index_1.default);
+app.use('/admins', admin_1.default);
+app.use('/vendor', vendor_1.default);
 const port = 4000;
 app.listen(port, () => {
     console.log(`server running on port http://localhost:${port}`);

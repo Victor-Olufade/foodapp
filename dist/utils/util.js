@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validatePassword = exports.loginSchema = exports.verifyJwtoken = exports.generateSignature = exports.generateHashedPassword = exports.generateSalt = exports.option = exports.registerSchema = void 0;
+exports.validatePassword = exports.loginSchema = exports.verifyJwtoken = exports.generateSignature = exports.generateHashedPassword = exports.generateSalt = exports.option = exports.vendorSchema = exports.adminSchema = exports.updateSchema = exports.registerSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -13,6 +13,29 @@ exports.registerSchema = joi_1.default.object().keys({
     password: joi_1.default.string().required().regex(/[A-Za-z0-9]{3,30}/),
     confirm_password: joi_1.default.any().equal(joi_1.default.ref('password')).required().label('confirm password').messages({ 'any.only': '{{#label}} does not match' }),
     phone: joi_1.default.string().required()
+});
+exports.updateSchema = joi_1.default.object().keys({
+    firstName: joi_1.default.string().required(),
+    lastName: joi_1.default.string().required(),
+    address: joi_1.default.string().required(),
+    phone: joi_1.default.string().required()
+});
+exports.adminSchema = joi_1.default.object().keys({
+    email: joi_1.default.string().required(),
+    password: joi_1.default.string().required(),
+    phone: joi_1.default.string().required(),
+    firstName: joi_1.default.string().required(),
+    lastName: joi_1.default.string().required(),
+    address: joi_1.default.string().required(),
+});
+exports.vendorSchema = joi_1.default.object().keys({
+    email: joi_1.default.string().required(),
+    password: joi_1.default.string().required().regex(/[A-Za-z0-9]{3,30}/),
+    phone: joi_1.default.string().required(),
+    name: joi_1.default.string().required(),
+    companyName: joi_1.default.string().required(),
+    address: joi_1.default.string().required(),
+    pin: joi_1.default.string().required(),
 });
 exports.option = {
     abortEarly: false,

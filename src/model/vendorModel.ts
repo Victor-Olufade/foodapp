@@ -1,26 +1,23 @@
 import { DataTypes, Model } from "sequelize";
 import {db} from '../config'
-export interface UserAttribute {
+export interface VendorAttribute {
     id: string,
     email: string,
     password: string,
-    firstName: string,
-    lastName: string,
+    name: string,
+    companyName: string,
+    pin: string,
     salt: string,
+    serviceAvailability: boolean,
+    rating: number,
     address: string,
-    phone: string,
-    otp: number,
-    otp_expiry: Date,
-    lng: number,
-    lat: number,
-    verified: boolean,
     role: string,
-    
+    phone: string,
 }
 
-export class UserInstance extends Model<UserAttribute>{}
+export class VendorInstance extends Model<VendorAttribute>{}
 
-UserInstance.init({
+VendorInstance.init({
     id: {
         type: DataTypes.UUIDV4,
         primaryKey: true,
@@ -51,11 +48,11 @@ UserInstance.init({
             }
         }
     },
-    firstName: {
+    name: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    lastName: {
+    companyName: {
         type: DataTypes.STRING,
         allowNull: true,
     },
@@ -79,54 +76,26 @@ UserInstance.init({
             }
         }
     },
-    otp: {
-        type: DataTypes.NUMBER,
-        allowNull: false,
-        validate: {
-            notNull: {
-                msg: "Phone number is required"
-            },
-            notEmpty: {
-                msg: "Please provide a phone number"
-            }
-        }
-    },
-    otp_expiry: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        validate: {
-            notNull:{
-                msg: "otp is required"
-            }
-        }
-    },
-    lng: {
+    
+    rating: {
         type: DataTypes.NUMBER,
         allowNull: true
     },
-    lat: {
-        type: DataTypes.NUMBER,
-        allowNull: true
-    },
-    verified: {
+    serviceAvailability: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        validate: {
-            notNull:{
-                msg: "User must be verified"
-            },
-            notEmpty: {
-                msg: "user not verified"
-            }
-        }
     },
     role: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    pin: {
         type: DataTypes.STRING,
         allowNull: true
     },
 },
 {
     sequelize: db,
-    tableName: 'user'
+    tableName: 'vendor'
 }
 )

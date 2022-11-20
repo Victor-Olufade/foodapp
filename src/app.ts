@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 import userRouter from './routes/users';
 import indexRouter from './routes/index';
 import {db} from './config/index';
+import adminRouter from './routes/admin'
+import vendorRouter from './routes/vendor'
 
 // sequelize connection
 db.sync().then(()=>{
@@ -26,6 +28,8 @@ app.use(cookieParser());
 
 app.use('/user', userRouter)
 app.use('/', indexRouter)
+app.use('/admins', adminRouter)
+app.use('/vendor', vendorRouter)
 
 const port = 4000
 app.listen(port, ()=>{

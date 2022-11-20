@@ -1,5 +1,5 @@
 import express,{Request, Response} from 'express';
-import { registerSchema, option, generateSalt, generateHashedPassword, generateOtp, onOtpReq, sendEmail, eHtml, generateSignature, verifyJwtoken, loginSchema, validatePassword } from '../utils';
+import { registerSchema, option, generateSalt, generateHashedPassword, generateOtp, onOtpReq, sendEmail, eHtml, generateSignature, verifyJwtoken, loginSchema, validatePassword, updateSchema } from '../utils';
 import {UserAttribute, UserInstance} from '../model/userModel';
 import {v4 as uuidv4} from 'uuid'
 import {adminMail, userSubject} from '../config'
@@ -35,7 +35,8 @@ try {
             otp_expiry: expiryTime,
             lng: 0,
             lat: 0,
-            verified: false 
+            verified: false ,
+            role: "user"
         })
         //send otp to user
         await onOtpReq(otp, phone);
@@ -125,7 +126,7 @@ export const login=async(req: Request, res:Response)=>{
         })
     }
     const User = await UserInstance.findOne({where:{email:email}}) as unknown as UserAttribute
-    if(User){
+    if(User.verified){
         const validation = await validatePassword(password, User.password, User.salt)
         if(validation){
             let signature = await generateSignature({
@@ -137,7 +138,8 @@ export const login=async(req: Request, res:Response)=>{
                 message: "You have sucessfully logged in",
                 signature,
                 email: User.email,
-                verified: User.verified
+                verified: User.verified,
+                role: User.role
             })
         }
     }
@@ -186,3 +188,99 @@ export const requestOTP=async(req: Request, res: Response)=>{
         })
     }
 }
+//Profile
+export const getAllUsers=async(req: Request, res: Response)=>{
+    try {
+        const limit = req.query.limit as number | undefined;
+    //     const users = await UserInstance.findAll({})
+    // return res.status(200).json({
+    //     message: "You have successfully retrieved all users",
+    //     users
+    // })
+    //instead of the findAll above, the findAndcountAll below may be 
+    //used to also return the count key in the json response
+    const Users = await UserInstance.findAndCountAll({limit: limit});
+    return res.status(200).json({
+        message: "You have successfully retrieved all users",
+        count: Users.count,
+        users: Users.rows,
+    })
+    } catch (error) {
+        return res.status(500).json({
+            Error: "Internal server error",
+            route: "/user/get-all-users"
+
+        })
+    }
+    
+}
+
+export const getUserById=async(req: JwtPayload, res: Response)=>{
+    try {
+        const {id} = req.User
+        console.log(id);
+        const User = await UserInstance.findOne({where:{id}}) as unknown as UserAttribute
+        if(User){
+            return res.status(200).json({
+                User
+            })
+        }
+        return res.status(400).json({
+            message: "User not found"
+        })
+        
+
+    } catch (error) {
+        return res.status(500).json({
+            Error: "Internal server error",
+            route: "/user/myprofile"
+
+        })
+    }
+}
+
+
+export const updateUserProfile=async(req: JwtPayload, res: Response)=>{
+    try {
+        const id = req.User.id
+        const {firstName, lastName, phone, address} = req.body
+        const joiValidateUser = updateSchema.validate(req.body, option)
+        if(joiValidateUser.error){
+            return res.status(400).json({
+                Error: joiValidateUser.error.details[0].message
+            })
+        }
+        const User = await UserInstance.findOne({where:{id}}) as unknown as UserAttribute;
+        if(!User){
+            return res.status(400).json({
+                Error: "You are not authorized to update your profile"
+            })
+        }
+
+        const updateUser = await UserInstance.update({
+            firstName, lastName, phone, address
+        }, {where: {id}}) as unknown as UserAttribute;
+
+        if(updateUser){
+            const User = await UserInstance.findOne({where:{id}}) as unknown as UserAttribute;
+            return res.status(200).json({
+                message: "You have successfully updated your account",
+                User
+            })
+        }
+
+        return res.status(400).json({
+            Error: "There's an error"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            Error: "Internal server error",
+            route: "/user/updateprofile"
+        })
+    }
+}
+
+
+//
+
+

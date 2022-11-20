@@ -105,7 +105,11 @@ UserInstance.init({
                 msg: "user not verified"
             }
         }
-    }
+    },
+    role: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true
+    },
 }, {
     sequelize: config_1.db,
     tableName: 'user'
